@@ -34,7 +34,7 @@ export function BlockSuiteEditorEnhanced({ className = "" }: BlockSuiteEditorPro
 
   const handleAIRequest = async (prompt: string) => {
     try {
-      console.log("AI Request:", prompt);
+      // console.log("AI Request:", prompt);
       
       if (prompt.toLowerCase().includes("brainstorm")) {
         await addBrainstormingContent();
@@ -51,7 +51,7 @@ export function BlockSuiteEditorEnhanced({ className = "" }: BlockSuiteEditorPro
   };
 
   const addBlock = async (type: string, data: any = {}) => {
-    console.log(`Adding ${type} block:`, data);
+    // console.log(`Adding ${type} block:`, typeof data === "object" ? "Block data" : data);
     
     const blockData = {
       type,
@@ -448,8 +448,8 @@ export function BlockSuiteEditorEnhanced({ className = "" }: BlockSuiteEditorPro
             globalDoc = editorEl.page;
 
             // console.log("✅ BlockSuite editor initialized");
-            console.log("   Workspace:", editorEl.workspace);
-            console.log("   Page:", editorEl.page);
+            // console.log("   Workspace:", editorEl.workspace);
+            // console.log("   Page:", editorEl.page);
             console.log("   Page ID:", editorEl.page.id);
 
             // Expose to window for debugging and manual testing
@@ -485,8 +485,8 @@ export function BlockSuiteEditorEnhanced({ className = "" }: BlockSuiteEditorPro
               };
 
               // console.log("📝 Manual testing functions available:");
-              console.log("   addText(content) - Add a paragraph");
-              console.log("   addHeading(text, level) - Add a heading (level 1-3)");
+              // console.log("   addText(content) - Add a paragraph");
+              // console.log("   addHeading(text, level) - Add a heading (level 1-3)");
               console.log("   addList(items, ordered) - Add a list");
               console.log("   addCode(code, language) - Add a code block");
               console.log("   clearEditor() - Clear all content");

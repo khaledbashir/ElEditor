@@ -43,7 +43,7 @@ export class TamboBlockSuiteIntegration {
   initialize(editor: BlockSuiteSaveManager) {
     this.editor = editor.page || null;
     this.saveManager = editor;
-    console.log('🔥 TamboBlockSuite Integration initialized');
+    // console.log("🔥 TamboBlockSuite Integration initialized");
   }
 
   /**
@@ -264,7 +264,7 @@ export class TamboBlockSuiteIntegration {
     options: InsertOptions = {}
   ): Promise<boolean> {
     if (!this.editor || !this.saveManager) {
-      console.error('❌ TamboBlockSuite integration not initialized');
+      // console.error("❌ TamboBlockSuite integration not initialized");
       return false;
     }
 
