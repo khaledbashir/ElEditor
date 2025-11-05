@@ -2,13 +2,15 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useTambo } from "@tambo-ai/react";
-import { Zap, FileText, Table, Code, List, Quote, Workflow, Brain, Target, Users, BarChart3, Plus, Sparkles } from "lucide-react";
+import { Zap, FileText, Table, Code, List, Quote, Workflow, Brain, Target, Users, BarChart3, Plus, Sparkles, PanelLeftIcon, PanelRightIcon } from "lucide-react";
 import { InsertToDocButton } from '@/components/tambo/insert-to-doc-button';
 import { useTamboBlockSuiteIntegration } from '@/lib/tambo-to-blocksuite-integration';
 import { Tooltip, TooltipProvider } from '@/components/suggestions-tooltip';
 
 export interface BlockSuiteEditorProps {
   className?: string;
+  mode?: 'spreadsheet' | 'blocksuite';
+  onModeChange?: (mode: 'spreadsheet' | 'blocksuite') => void;
 }
 
 // Global reference to the BlockSuite doc for programmatic access
@@ -23,7 +25,7 @@ export function getBlockSuiteCollection() {
   return globalCollection;
 }
 
-export function BlockSuiteEditorEnhanced({ className = "" }: BlockSuiteEditorProps) {
+export function BlockSuiteEditorEnhanced({ className = "", mode = 'blocksuite', onModeChange }: BlockSuiteEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const editorElRef = useRef<HTMLElement | null>(null);
   const [ready, setReady] = useState(false);
@@ -597,9 +599,46 @@ export function BlockSuiteEditorEnhanced({ className = "" }: BlockSuiteEditorPro
         {/* Enhanced Toolbar with AI Components */}
         <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between">
           <div className="flex items-center space-x-3">
+            {/* Mode selector for mobile */}
+            <button
+              onClick={() => onModeChange?.(mode === 'spreadsheet' ? 'blocksuite' : 'spreadsheet')}
+              className="md:hidden p-2 rounded-lg bg-background/80 backdrop-blur-sm hover:bg-accent/80 shadow-sm border border-border transition-all duration-200 min-w-10 min-h-10 flex items-center justify-center"
+              aria-label={mode === 'spreadsheet' ? "Switch to Document Editor" : "Switch to Spreadsheet"}
+            >
+              {mode === 'spreadsheet' ? <PanelLeftIcon className="h-4 w-4" /> : <PanelRightIcon className="h-4 w-4" />}
+            </button>
+
+            {/* Mode selector for desktop */}
+            <div className="hidden md:flex bg-background/80 backdrop-blur-sm rounded-lg border border-border shadow-sm p-1 gap-1">
+              <button
+                onClick={() => onModeChange?.('spreadsheet')}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 min-w-20 ${
+                  mode === 'spreadsheet'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                }`}
+                aria-pressed={mode === 'spreadsheet'}
+                aria-label="Switch to Spreadsheet mode"
+              >
+                Spreadsheet
+              </button>
+              <button
+                onClick={() => onModeChange?.('blocksuite')}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 min-w-20 ${
+                  mode === 'blocksuite'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                }`}
+                aria-pressed={mode === 'blocksuite'}
+                aria-label="Switch to Document Editor mode"
+              >
+                Document Editor
+              </button>
+            </div>
+
             <h3 className="text-xs font-medium text-gray-500 flex items-center">
               <FileText className="w-3.5 h-3.5 mr-1.5" />
-              BlockSuite Editor
+              Document Editor
             </h3>
             {insertedComponents.length > 0 && (
               <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">

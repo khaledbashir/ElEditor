@@ -26,20 +26,17 @@ export default function Home() {
   const [mode, setMode] = useState<'spreadsheet' | 'blocksuite'>('spreadsheet');
   const contextKey = usePersistentContextKey();
   const [isClient, setIsClient] = useState(false);
-  const [showStashNotification, setShowStashNotification] = useState(true);
+  const [showStashNotification, setShowStashNotification] = useState(() => {
+    const dismissed = localStorage.getItem('component-stash-notification-dismissed');
+    return dismissed !== 'true';
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => setIsClient(true), 0);
     return () => clearTimeout(timer);
   }, []);
 
-  // Check if notification was dismissed
-  useEffect(() => {
-    const dismissed = localStorage.getItem('component-stash-notification-dismissed');
-    if (dismissed === 'true') {
-      setShowStashNotification(false);
-    }
-  }, []);
+  
 
   const handleDismissNotification = () => {
     setShowStashNotification(false);

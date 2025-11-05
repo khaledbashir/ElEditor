@@ -208,9 +208,9 @@ const clearEditor = async () => {
 // ============================================
 
 export const addTextBlockTool = {
-  name: "addBlockSuiteTextBlock",
+  name: "addDocumentEditorTextBlock",
   description:
-    "Add a text block to the BlockSuite editor. You can specify the content and type (paragraph, heading1, heading2, heading3). Make sure the editor is in BlockSuite mode first. This will append the block to the end of the document.",
+    "Add a text block to the Document Editor. You can specify the content and type (paragraph, heading1, heading2, heading3). Make sure the editor is in Document Editor mode first. This will append the block to the end of the document.",
   tool: addTextBlock,
   toolSchema: z
     .function()
@@ -228,9 +228,9 @@ export const addTextBlockTool = {
 };
 
 export const addListBlockTool = {
-  name: "addBlockSuiteListBlock",
+  name: "addDocumentEditorListBlock",
   description:
-    "Add a list block to the BlockSuite editor. Provide an array of strings for the list items, and specify whether it should be ordered (numbered) or unordered (bulleted). Make sure the editor is in BlockSuite mode first.",
+    "Add a list block to the Document Editor. Provide an array of strings for the list items, and specify whether it should be ordered (numbered) or unordered (bulleted). Make sure the editor is in Document Editor mode first.",
   tool: addListBlock,
   toolSchema: z
     .function()
@@ -248,9 +248,9 @@ export const addListBlockTool = {
 };
 
 export const addCodeBlockTool = {
-  name: "addBlockSuiteCodeBlock",
+  name: "addDocumentEditorCodeBlock",
   description:
-    "Add a code block to the BlockSuite editor. Provide the code content and optionally specify the programming language for syntax highlighting. Make sure the editor is in BlockSuite mode first.",
+    "Add a code block to the Document Editor. Provide the code content and optionally specify the programming language for syntax highlighting. Make sure the editor is in Document Editor mode first.",
   tool: addCodeBlock,
   toolSchema: z
     .function()
@@ -268,9 +268,9 @@ export const addCodeBlockTool = {
 };
 
 export const switchToBlocksuiteModeTool = {
-  name: "switchToBlocksuiteMode",
+  name: "switchToDocumentEditorMode",
   description:
-    "Instructions for switching to BlockSuite mode. Since mode switching happens in the UI, this tool provides guidance on how to switch modes manually.",
+    "Instructions for switching to Document Editor mode. Since mode switching happens in the UI, this tool provides guidance on how to switch modes manually.",
   tool: switchToBlocksuiteMode,
   toolSchema: z
     .function()
@@ -285,9 +285,9 @@ export const switchToBlocksuiteModeTool = {
 };
 
 export const addKanbanBoardTool = {
-  name: "addBlockSuiteKanbanBoard",
+  name: "addDocumentEditorKanbanBoard",
   description:
-    "Add a Kanban board to the BlockSuite editor. Provide a title for the Kanban board. The board will be created with a default kanban view. Make sure the editor is in BlockSuite mode first.",
+    "Add a Kanban board to the Document Editor. Provide a title for the Kanban board. The board will be created with a default kanban view. Make sure the editor is in Document Editor mode first.",
   tool: addKanbanBoard,
   toolSchema: z
     .function()
@@ -304,9 +304,9 @@ export const addKanbanBoardTool = {
 };
 
 export const clearEditorTool = {
-  name: "clearBlocksuiteEditor",
+  name: "clearDocumentEditor",
   description:
-    "Clear all content from the BlockSuite editor. Make sure the editor is in BlockSuite mode first.",
+    "Clear all content from the Document Editor. Make sure the editor is in Document Editor mode first.",
   tool: clearEditor,
   toolSchema: z
     .function()

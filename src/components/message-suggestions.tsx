@@ -325,7 +325,7 @@ const MessageSuggestionsList = React.forwardRef<
             <Tooltip
               key={suggestion.id}
               content={
-                <span suppressHydrationWarning>
+                <span>
                   {modKey}+{altKey}+{index + 1}
                 </span>
               }

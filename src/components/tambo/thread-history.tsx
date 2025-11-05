@@ -171,7 +171,6 @@ const ThreadHistory = React.forwardRef<HTMLDivElement, ThreadHistoryProps>(
               "w-64",
               className,
             )}
-            suppressHydrationWarning={true}
             {...props}
           >
             <div className="flex flex-col h-full p-4">
@@ -194,7 +193,6 @@ const ThreadHistory = React.forwardRef<HTMLDivElement, ThreadHistoryProps>(
             isCollapsed ? "w-12" : "w-64",
             className,
           )}
-          suppressHydrationWarning={true}
           {...props}
         >
           <div
@@ -243,7 +241,7 @@ const ThreadHistoryHeader = React.forwardRef<
             : "opacity-100 max-w-none transition-all duration-300 delay-75",
         )}
       >
-        Tambo Conversations
+        Conversations
       </h2>
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}

@@ -14,6 +14,7 @@ import { spreadsheetTools } from "@/tools/spreadsheet-tools";
 import { tabTools } from "@/tools/tab-tools";
 import { blocksuiteTools } from "@/tools/blocksuite-tools";
 import { graphComponent } from "@/components/tambo/graph-component";
+import { formComponent } from "@/components/tambo/form-component";
 
 /**
  * tools
@@ -40,4 +41,5 @@ export const components: TamboComponent[] = [
   // Spreadsheet is intentionally NOT registered as a component
   // It's automatically created with each tab/canvas
   graphComponent,
+  formComponent,
 ];

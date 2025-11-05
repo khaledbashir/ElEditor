@@ -23,7 +23,9 @@
     "init": "npx tambo init",
     "clean": "rm -rf .next node_modules/.cache",
     "clean:full": "rm -rf .next node_modules package-lock.json pnpm-lock.yaml",
-    "dev:optimized": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev --turbo"
+    "dev:optimized": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev --turbo",
+    "fix:codegpt-port": "node scripts/fix-codegpt-port.js",
+    "fix:codegpt-port:force": "node scripts/fix-codegpt-port.js --force"
   },
   "dependencies": {
     "@blocksuite/blocks": "^0.10.0",
