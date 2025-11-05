@@ -12,6 +12,7 @@ import type { TamboComponent } from "@tambo-ai/react";
 import { TamboTool } from "@tambo-ai/react";
 import { spreadsheetTools } from "@/tools/spreadsheet-tools";
 import { tabTools } from "@/tools/tab-tools";
+import { blocksuiteTools } from "@/tools/blocksuite-tools";
 import { graphComponent } from "@/components/tambo/graph-component";
 
 /**
@@ -25,6 +26,7 @@ import { graphComponent } from "@/components/tambo/graph-component";
 export const tools: TamboTool[] = [
   ...spreadsheetTools,
   ...tabTools,
+  ...blocksuiteTools,
 ];
 
 /**

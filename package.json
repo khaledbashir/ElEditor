@@ -8,6 +8,9 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:chat": "node scripts/dev-with-chat.js",
+    "dev:simple": "next dev",
+    "dev:open": "open http://localhost:3000/chat || xdg-open http://localhost:3000/chat || start http://localhost:3000/chat; next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -15,6 +18,9 @@
     "init": "npx tambo init"
   },
   "dependencies": {
+    "@blocksuite/blocks": "^0.10.0",
+    "@blocksuite/editor": "^0.10.0",
+    "@blocksuite/store": "^0.10.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
@@ -37,6 +43,8 @@
     "react-markdown": "^10.1.0",
     "recharts": "^3.3.0",
     "streamdown": "^1.4.0",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.27",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

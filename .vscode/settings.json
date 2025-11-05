@@ -1,0 +1,57 @@
+{
+  "oaicopilot.baseUrl": "https://api.z.ai/api/coding/paas/v4",
+  "oaicopilot.models": [
+    {
+      "id": "GLM-4.6",
+      "displayName": "GLM-4.6 (Coding)",
+      "owned_by": "zai",
+      "context_length": 200000,
+      "max_tokens": 8192,
+      "temperature": 0,
+      "top_p": 1,
+      "thinking": {
+        "type": "enabled"
+      }
+    },
+    {
+      "id": "MiniMax-M2",
+      "displayName": "MiniMax-M2 (Reasoning)",
+      "owned_by": "minimax",
+      "baseUrl": "https://api.minimax.io/v1",
+      "context_length": 200000,
+      "max_tokens": 128000,
+      "temperature": 0,
+      "top_p": 1,
+      "vision": true
+    },
+    {
+      "id": "ep-tiv4k5-1760372718620660677",
+      "displayName": "StreamLake Model 1",
+      "owned_by": "streamlake",
+      "baseUrl": "https://vanchin.streamlake.ai/api/gateway/v1/endpoints",
+      "context_length": 128000,
+      "max_tokens": 4096,
+      "temperature": 0,
+      "top_p": 1
+    },
+    {
+      "id": "llama3.1-405b",
+      "displayName": "Llama3.1 405B (Groq)",
+      "owned_by": "groq",
+      "context_length": 128000,
+      "max_tokens": 4096,
+      "temperature": 0,
+      "top_p": 1
+    }
+  ],
+  "tailwindCSS.experimental.classRegex": [
+    "@custom-variant\\s+([^(]+)",
+    "@theme\\s+inline"
+  ],
+  "css.validate": true,
+  "less.validate": true,
+  "scss.validate": true,
+  "css.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore"
+}

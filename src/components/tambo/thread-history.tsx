@@ -77,9 +77,16 @@ const ThreadHistory = React.forwardRef<HTMLDivElement, ThreadHistoryProps>(
     },
     ref,
   ) => {
+    // Only use browser-specific APIs on the client side
+    const [isClient, setIsClient] = React.useState(false);
     const [searchQuery, setSearchQuery] = React.useState("");
     const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
     const [shouldFocusSearch, setShouldFocusSearch] = React.useState(false);
+
+    // Mark this as hydrated on the client
+    React.useEffect(() => {
+      setIsClient(true);
+    }, []);
 
     const {
       data: threads,
@@ -96,21 +103,23 @@ const ThreadHistory = React.forwardRef<HTMLDivElement, ThreadHistoryProps>(
       generateThreadName,
     } = useTamboThread();
 
-    // Update CSS variable when sidebar collapses/expands
+    // Update CSS variable when sidebar collapses/expands (client-side only)
     React.useEffect(() => {
-      const sidebarWidth = isCollapsed ? "3rem" : "16rem";
-      document.documentElement.style.setProperty(
-        "--sidebar-width",
-        sidebarWidth,
-      );
-    }, [isCollapsed]);
+      if (isClient) {
+        const sidebarWidth = isCollapsed ? "3rem" : "16rem";
+        document.documentElement.style.setProperty(
+          "--sidebar-width",
+          sidebarWidth,
+        );
+      }
+    }, [isClient, isCollapsed]);
 
-    // Focus search input when expanded from collapsed state
+    // Focus search input when expanded from collapsed state (client-side only)
     React.useEffect(() => {
-      if (!isCollapsed && shouldFocusSearch) {
+      if (isClient && !isCollapsed && shouldFocusSearch) {
         setShouldFocusSearch(false);
       }
-    }, [isCollapsed, shouldFocusSearch]);
+    }, [isClient, isCollapsed, shouldFocusSearch]);
 
     const contextValue = React.useMemo(
       () => ({
@@ -149,6 +158,30 @@ const ThreadHistory = React.forwardRef<HTMLDivElement, ThreadHistoryProps>(
       ],
     );
 
+    // Don't render the full component until we're on the client to avoid hydration mismatches
+    if (!isClient) {
+      // Server-side render: render minimal, consistent markup
+      return (
+        <ThreadHistoryContext.Provider value={contextValue as ThreadHistoryContextValue}>
+          <div
+            ref={null}
+            className={cn(
+              "border-flat bg-container h-screen fixed top-0 transition-all duration-300",
+              position === "left" ? "border-r left-0" : "border-l right-0",
+              "w-64",
+              className,
+            )}
+            suppressHydrationWarning={true}
+            {...props}
+          >
+            <div className="flex flex-col h-full p-4">
+              {children}
+            </div>
+          </div>
+        </ThreadHistoryContext.Provider>
+      );
+    }
+
     return (
       <ThreadHistoryContext.Provider
         value={contextValue as ThreadHistoryContextValue}
@@ -161,6 +194,7 @@ const ThreadHistory = React.forwardRef<HTMLDivElement, ThreadHistoryProps>(
             isCollapsed ? "w-12" : "w-64",
             className,
           )}
+          suppressHydrationWarning={true}
           {...props}
         >
           <div

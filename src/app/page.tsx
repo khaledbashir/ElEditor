@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 import { useMcpServers } from "@/components/tambo/mcp-config-modal";
 import { MessageThreadFull } from "@/components/tambo/message-thread-full";
 import SpreadsheetTabs from "@/components/ui/spreadsheet-tabs";
@@ -10,15 +11,35 @@ import { spreadsheetSelectionContextHelper } from "@/lib/spreadsheet-selection-c
 import { usePersistentContextKey } from "@/hooks/usePersistentContextKey";
 import { TamboProvider } from "@tambo-ai/react";
 import { TamboMcpProvider } from "@tambo-ai/react/mcp";
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { PanelLeftIcon, PanelRightIcon } from "lucide-react";
+
+// Dynamic import to avoid SSR issues with BlockSuite
+const LazyBlockSuiteEditor = dynamic(() => import("@/components/ui/blocksuite-editor-enhanced").then(mod => ({ default: mod.BlockSuiteEditorEnhanced })), {
+  ssr: false,
+  loading: () => <div className="h-full flex items-center justify-center">Loading Enhanced BlockSuite Editor...</div>
+});
 
 export default function Home() {
   const mcpServers = useMcpServers();
-  const [showSpreadsheet, setShowSpreadsheet] = useState(true);
+  const [mode, setMode] = useState<'spreadsheet' | 'blocksuite'>('spreadsheet');
   const contextKey = usePersistentContextKey();
+  const [isClient, setIsClient] = useState(false);
 
-  // You can customize default suggestions via MessageThreadFull internals
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Defer rendering chat until client to ensure TamboProvider context
+  if (!isClient) {
+    return (
+      <ApiKeyCheck>
+        <div className="h-screen flex items-center justify-center">
+          <div className="text-sm text-muted-foreground">Loading chat…</div>
+        </div>
+      </ApiKeyCheck>
+    );
+  }
 
   return (
     <ApiKeyCheck>
@@ -36,26 +57,57 @@ export default function Home() {
           <TamboMcpProvider mcpServers={mcpServers}>
             {/* Mobile toggle button */}
             <button
-              onClick={() => setShowSpreadsheet(!showSpreadsheet)}
+              onClick={() => setMode(mode === 'spreadsheet' ? 'blocksuite' : 'spreadsheet')}
               className="md:hidden fixed top-4 right-4 z-50 p-2 rounded-lg bg-accent hover:bg-accent/80 shadow-lg border border-border"
-              aria-label={showSpreadsheet ? "Show chat" : "Show spreadsheet"}
+              aria-label={mode === 'spreadsheet' ? "Switch to BlockSuite" : "Switch to Spreadsheet"}
             >
-              {showSpreadsheet ? <PanelLeftIcon className="h-5 w-5" /> : <PanelRightIcon className="h-5 w-5" />}
+              {mode === 'spreadsheet' ? <PanelLeftIcon className="h-5 w-5" /> : <PanelRightIcon className="h-5 w-5" />}
             </button>
 
+            {/* Mode selector for desktop */}
+            <div className="hidden md:flex fixed top-4 right-4 z-50 gap-2">
+              <button
+                onClick={() => setMode('spreadsheet')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium ${
+                  mode === 'spreadsheet'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-accent hover:bg-accent/80 text-accent-foreground'
+                }`}
+              >
+                Spreadsheet
+              </button>
+              <button
+                onClick={() => setMode('blocksuite')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium ${
+                  mode === 'blocksuite'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-accent hover:bg-accent/80 text-accent-foreground'
+                }`}
+              >
+                BlockSuite
+              </button>
+            </div>
+
             <div className="flex h-full overflow-hidden">
-              {/* Chat panel - hidden on mobile when spreadsheet is shown */}
-              <div className={`${showSpreadsheet ? 'hidden md:flex' : 'flex'} flex-1 overflow-hidden`}>
+              {/* Chat panel - always visible */}
+              <div className="flex-1 overflow-hidden">
                 {contextKey ? <MessageThreadFull contextKey={contextKey} /> : null}
               </div>
 
-              {/* Spreadsheet panel - responsive width and visibility */}
-              <div className={`${showSpreadsheet ? 'flex' : 'hidden md:flex'} w-full md:w-[60%] overflow-auto`}>
-                {/* Tab metadata interactable for AI */}
-                <InteractableTabs interactableId="TabsState" />
-
-                {/* Visual spreadsheet tabs UI */}
-                <SpreadsheetTabs className="h-full" />
+              {/* Editor panel */}
+              <div className="w-full md:w-[60%] overflow-auto">
+                {mode === 'spreadsheet' ? (
+                  <>
+                    {/* Tab metadata interactable for AI */}
+                    <InteractableTabs interactableId="TabsState" />
+                    {/* Visual spreadsheet tabs UI */}
+                    <SpreadsheetTabs className="h-full" />
+                  </>
+                ) : (
+                  <Suspense fallback={<div className="h-full flex items-center justify-center">Loading BlockSuite Editor...</div>}>
+                    <LazyBlockSuiteEditor />
+                  </Suspense>
+                )}
               </div>
             </div>
           </TamboMcpProvider>

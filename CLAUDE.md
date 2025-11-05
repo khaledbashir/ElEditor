@@ -52,6 +52,22 @@ The spreadsheet uses a three-layer architecture for AI interaction:
 - Zustand store in `src/lib/spreadsheet-tabs-store.ts` manages spreadsheet data
 - Components are stored with metadata: `componentId`, `canvasId`, `_componentType`, `_inCanvas`
 
+**Storage System (Production-Grade)**
+
+- **IndexedDB Storage**: Primary storage backend with 50+ MB capacity
+- **Thread-Document Association**: Each thread has its own persistent document
+- **Auto-Save**: Debounced auto-save with queue management and retry logic
+- **Migration**: Automatic localStorage → IndexedDB migration on first load
+- **Architecture**: Storage Manager → IndexedDB Adapter → Browser IndexedDB
+- **React Integration**: `useThreadDocument` hook for component integration
+- **Documentation**: See `docs/STORAGE_ARCHITECTURE.md` for detailed guide
+
+Key storage files:
+- `src/lib/storage/` - Core storage system (types, manager, adapters, services)
+- `src/lib/storage-system-singleton.ts` - Global storage instance
+- `src/hooks/useThreadDocument.ts` - React hook for document management
+- `src/lib/storage/adapters/indexeddb-adapter.ts` - IndexedDB implementation
+
 **MCP (Model Context Protocol)**
 
 - Configure MCP servers via modal component (no dedicated route)
@@ -75,6 +91,16 @@ The spreadsheet uses a three-layer architecture for AI interaction:
 - `src/lib/spreadsheet-context-helper.ts` - Context utilities
 - `src/lib/spreadsheet-utils.ts` - Spreadsheet utility functions
 - `src/tools/spreadsheet-tools.ts` - AI tools for spreadsheet manipulation
+
+**Storage System**
+- `src/lib/storage/types.ts` - TypeScript type definitions (300 lines)
+- `src/lib/storage/storage-manager.ts` - Main storage orchestrator (300 lines)
+- `src/lib/storage/thread-document-service.ts` - Thread-document associations (300 lines)
+- `src/lib/storage/adapters/indexeddb-adapter.ts` - IndexedDB implementation (550 lines)
+- `src/lib/storage/migration.ts` - Migration utilities (250 lines)
+- `src/lib/storage/logger.ts` - Production logging system (75 lines)
+- `src/lib/storage-system-singleton.ts` - Global storage instance (50 lines)
+- `src/hooks/useThreadDocument.ts` - React hook for documents (250 lines)
 
 **Other Components**
 - `src/lib/canvas-storage.ts` - Canvas/tab state management

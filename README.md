@@ -22,6 +22,8 @@ https://github.com/user-attachments/assets/da72aa8b-6bc5-468e-8f42-0da685105d22
 - **Multi-Modal**: Attach Images along with Messages.
 - **Charts and Graphs**: Create visualizations from your spreadsheet data
 - **Model Context Protocol (MCP)**: Connect external data sources and tools
+- **BlockSuite Document Editor**: Rich document editing with AI integration
+- **Production-Grade Storage**: Enterprise-ready IndexedDB storage with auto-save and thread-document association
 
 ## Roadmap
 
@@ -32,6 +34,8 @@ https://github.com/user-attachments/assets/da72aa8b-6bc5-468e-8f42-0da685105d22
 
 
 ## Get Started
+
+**Quick Start**: See [docs/QUICK_START.md](./docs/QUICK_START.md) for a 5-minute setup guide!
 
 1. Clone this repository
 
@@ -119,6 +123,12 @@ This template shows how the AI reads and updates the spreadsheet through three w
 - `src/lib/canvas-storage.ts` - Canvas/tab state management
 - Powered by `@silevis/reactgrid` library and Zustand
 
+**Storage System**
+- `src/lib/storage/` - Production-grade storage architecture
+- `src/lib/storage-system-singleton.ts` - Global storage instance
+- `src/hooks/useThreadDocument.ts` - React hook for document management
+- See [Storage Architecture](./docs/STORAGE_ARCHITECTURE.md) for details
+
 **Note on Dependencies:** This project uses `@silevis/reactgrid@4.1.17` with `legacy-peer-deps=true` to work around React 19 peer dependency constraints. The library functions correctly despite the warning.
 
 ## Customizing
@@ -169,8 +179,65 @@ Register in `src/lib/tambo.ts` tools array. See [Tambo Tools docs](https://docs.
 
 Configure MCP servers via the settings modal to connect external data sources. Servers are stored in browser localStorage and wrapped with `TamboMcpProvider` in the chat interface.
 
+## Storage System
+
+This application features a **production-grade storage architecture** that replaces localStorage with IndexedDB for better performance, capacity, and reliability.
+
+### Key Features
+
+- **IndexedDB Storage**: 50+ MB capacity (vs 5-10 MB localStorage limit)
+- **Thread-Document Association**: Each chat thread has its own persistent document
+- **Auto-Save**: Debounced auto-save with queue management (never lose work)
+- **Automatic Migration**: Seamlessly migrates existing localStorage data to IndexedDB
+- **Error Recovery**: Retry logic with exponential backoff for failed operations
+- **Type-Safe**: Full TypeScript coverage with comprehensive interfaces
+
+### Quick Start
+
+The storage system initializes automatically when you start the app. Documents are automatically created and saved for each thread.
+
+```typescript
+// Use in React components
+import { useThreadDocument } from '@/hooks/useThreadDocument';
+
+function MyComponent({ threadId }) {
+  const { document, updateContent, isSaving } = useThreadDocument({
+    threadId,
+    autoSave: true,
+  });
+
+  // Document loads automatically
+  // Changes auto-save after 2 seconds
+  // Status indicators show saving/saved state
+}
+```
+
+### Documentation
+
+- **[Storage Architecture](./docs/STORAGE_ARCHITECTURE.md)** - Detailed technical documentation
+- **[Implementation Summary](./docs/IMPLEMENTATION_SUMMARY.md)** - Features, performance, and usage examples
+
+### Architecture Overview
+
+```
+React Components → useThreadDocument Hook → Storage Manager → IndexedDB
+                                          ↓
+                                   Thread-Document Service
+```
+
+The system provides:
+- **Storage Manager**: Handles all storage operations with retry logic
+- **Thread-Document Service**: Links threads to documents automatically
+- **IndexedDB Adapter**: ACID transactions with proper error handling
+- **Migration Utilities**: Automatic localStorage → IndexedDB migration
+
 ## Documentation
 
+### Project Documentation
+- **[Storage Architecture](./docs/STORAGE_ARCHITECTURE.md)** - Production storage system
+- **[Implementation Summary](./docs/IMPLEMENTATION_SUMMARY.md)** - Storage features and usage
+
+### Tambo AI Documentation
 Learn more about Tambo:
 - [Components](https://docs.tambo.co/concepts/components)
 - [Interactable Components](https://docs.tambo.co/concepts/components/interactable-components)
