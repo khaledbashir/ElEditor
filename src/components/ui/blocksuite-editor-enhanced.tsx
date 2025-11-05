@@ -5,6 +5,7 @@ import { useTambo } from "@tambo-ai/react";
 import { Zap, FileText, Table, Code, List, Quote, Workflow, Brain, Target, Users, BarChart3, Plus, Sparkles } from "lucide-react";
 import { InsertToDocButton } from '@/components/tambo/insert-to-doc-button';
 import { useTamboBlockSuiteIntegration } from '@/lib/tambo-to-blocksuite-integration';
+import { Tooltip, TooltipProvider } from '@/components/suggestions-tooltip';
 
 export interface BlockSuiteEditorProps {
   className?: string;
@@ -388,6 +389,54 @@ export function BlockSuiteEditorEnhanced({ className = "" }: BlockSuiteEditorPro
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [showSlashMenu]);
 
+  // Handle click outside to close slash menu
+  useEffect(() => {
+    if (!showSlashMenu) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      // Check if click is outside the slash menu
+      const slashMenu = document.querySelector('.slash-menu-container');
+      if (slashMenu && !slashMenu.contains(target)) {
+        setShowSlashMenu(false);
+        setCurrentQuery("");
+      }
+    };
+
+    // Add a small delay to prevent immediate closing when menu opens
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSlashMenu]);
+
+  // Handle focus loss to close slash menu
+  useEffect(() => {
+    if (!showSlashMenu) return;
+
+    const handleFocusChange = () => {
+      // Close menu if focus moves to a different input or area
+      const activeElement = document.activeElement;
+      const slashMenu = document.querySelector('.slash-menu-container');
+      if (slashMenu && !slashMenu.contains(activeElement)) {
+        // Give a small delay to allow clicking on menu items
+        setTimeout(() => {
+          if (!slashMenu.contains(document.activeElement)) {
+            setShowSlashMenu(false);
+            setCurrentQuery("");
+          }
+        }, 150);
+      }
+    };
+
+    document.addEventListener('focusin', handleFocusChange);
+    return () => document.removeEventListener('focusin', handleFocusChange);
+  }, [showSlashMenu]);
+
   const handleSlashCommand = useCallback(async (query: string) => {
     setShowSlashMenu(false);
     setCurrentQuery("");
@@ -522,58 +571,89 @@ export function BlockSuiteEditorEnhanced({ className = "" }: BlockSuiteEditorPro
   }, []);
 
   return (
-    <div className={`h-full w-full ${className} relative`}>
-      {/* Enhanced Toolbar with AI Components */}
-      <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <h3 className="text-sm font-semibold text-gray-700 flex items-center">
-            <FileText className="w-4 h-4 mr-2" />
-            Enhanced BlockSuite Editor
-          </h3>
-          {insertedComponents.length > 0 && (
-            <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
-              {insertedComponents.length} AI components inserted
-            </span>
-          )}
+    <TooltipProvider>
+      <div className={`h-full w-full ${className} relative`}>
+        {/* Custom styles for BlockSuite editor */}
+        <style jsx global>{`
+          /* Improve title placeholder styling */
+          simple-affine-editor .affine-doc-page-block-title-placeholder {
+            font-size: 2rem !important;
+            color: #6B7280 !important;
+            font-weight: 600 !important;
+          }
+
+          /* Improve editor container visual definition */
+          simple-affine-editor .affine-doc-page-block-container {
+            padding: 2rem !important;
+            background: #ffffff !important;
+          }
+
+          /* Add subtle shadow to editor when focused */
+          simple-affine-editor:focus-within {
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+          }
+        `}</style>
+
+        {/* Enhanced Toolbar with AI Components */}
+        <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <h3 className="text-xs font-medium text-gray-500 flex items-center">
+              <FileText className="w-3.5 h-3.5 mr-1.5" />
+              BlockSuite Editor
+            </h3>
+            {insertedComponents.length > 0 && (
+              <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                {insertedComponents.length} AI components
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* AI Components Button - Redesigned */}
+            <Tooltip content="Insert AI Component">
+              <button
+                onClick={() => {
+                  // Trigger the insert to doc functionality
+                  const button = document.querySelector('[data-insert-to-doc-trigger]') as HTMLElement;
+                  if (button) button.click();
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-medium rounded-md transition-colors"
+                aria-label="Insert AI Component"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>AI</span>
+              </button>
+            </Tooltip>
+
+            {/* Visual separator */}
+            <div className="h-5 w-px bg-gray-200" />
+
+            {/* Quick Actions with proper spacing and tooltips */}
+            <Tooltip content="Add Code Block">
+              <button
+                onClick={() => addBlock("code", { code: "// Your code here", language: "typescript" })}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors min-w-11 min-h-11 flex items-center justify-center"
+                aria-label="Add Code Block"
+              >
+                <Code className="w-4 h-4" />
+              </button>
+            </Tooltip>
+
+            <Tooltip content="Add Table">
+              <button
+                onClick={() => addBlock("table", { rows: 3, cols: 3 })}
+                className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors min-w-11 min-h-11 flex items-center justify-center"
+                aria-label="Add Table"
+              >
+                <Table className="w-4 h-4" />
+              </button>
+            </Tooltip>
+          </div>
         </div>
-        
-        <div className="flex items-center space-x-2">
-          {/* AI Components Button */}
-          <button
-            onClick={() => {
-              // Trigger the insert to doc functionality
-              const button = document.querySelector('[data-insert-to-doc-trigger]') as HTMLElement;
-              if (button) button.click();
-            }}
-            className="flex items-center space-x-1 px-3 py-1.5 bg-linear-to-r from-blue-500 to-purple-600 text-white text-xs font-medium rounded-md hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
-            title="Insert AI Component"
-          >
-            <Sparkles className="w-3 h-3" />
-            <span>AI Components</span>
-          </button>
-          
-          {/* Quick Actions */}
-          <button
-            onClick={() => addBlock("code", { code: "// Your code here", language: "typescript" })}
-            className="p-1.5 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-            title="Add Code Block"
-          >
-            <Code className="w-4 h-4" />
-          </button>
-          
-          <button
-            onClick={() => addBlock("table", { rows: 3, cols: 3 })}
-            className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-            title="Add Table"
-          >
-            <Table className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
       
       <div
         ref={hostRef}
-        className="h-[calc(100%-60px)] w-full overflow-auto min-h-[500px] bg-white border border-border rounded-md"
+        className="h-[calc(100%-60px)] w-full overflow-auto min-h-[500px] bg-gray-50 border border-gray-200 rounded-md shadow-sm"
       />
       
       {/* Floating Insert to Doc Button */}
@@ -587,8 +667,8 @@ export function BlockSuiteEditorEnhanced({ className = "" }: BlockSuiteEditorPro
       
       {/* Slash Menu */}
       {showSlashMenu && (
-        <div 
-          className="fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[280px] max-w-[400px]"
+        <div
+          className="slash-menu-container fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[280px] max-w-[400px]"
           style={{
             left: slashMenuPosition.x,
             top: slashMenuPosition.y,
@@ -639,6 +719,7 @@ export function BlockSuiteEditorEnhanced({ className = "" }: BlockSuiteEditorPro
           Loading enhanced BlockSuite editor…
         </div>
       )}
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }

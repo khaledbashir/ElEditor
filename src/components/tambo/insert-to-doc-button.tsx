@@ -215,6 +215,7 @@ export function InsertToDocButton({
             onClick={() => setIsOpen(!isOpen)}
             className={`${config.button} bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group`}
             disabled={isIntegrating}
+            title={isOpen ? "Close component menu" : "Insert AI block to document"}
           >
             {isOpen ? (
               <X className={`${config.icon} transition-transform duration-200`} />

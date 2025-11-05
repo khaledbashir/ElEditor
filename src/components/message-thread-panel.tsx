@@ -302,3 +302,6 @@ export const MessageThreadPanel = React.forwardRef<
   );
 });
 MessageThreadPanel.displayName = "MessageThreadPanel";
+
+// Export ResizablePanel for use in other components
+export { ResizablePanel };

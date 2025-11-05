@@ -57,7 +57,7 @@ const GitHubButton = React.forwardRef<
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "flex items-center rounded-md mb-4 hover:bg-backdrop transition-colors cursor-pointer relative",
+        "flex items-center rounded-md mb-2 hover:bg-backdrop transition-colors cursor-pointer relative",
         isCollapsed ? "p-1 justify-center" : "p-2 gap-2",
       )}
       title="View on GitHub"

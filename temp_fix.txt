@@ -1,0 +1,34 @@
+// Mobile toggle button - improved positioning
+<button
+  onClick={() => setMode(mode === 'spreadsheet' ? 'blocksuite' : 'spreadsheet')}
+  className="md:hidden fixed top-4 right-4 z-50 p-2 rounded-lg bg-accent hover:bg-accent/80 shadow-lg border border-border"
+  aria-label={mode === 'spreadsheet' ? "Switch to BlockSuite" : "Switch to Spreadsheet"}
+>
+  {mode === 'spreadsheet' ? <PanelLeftIcon className="h-5 w-5" /> : <PanelRightIcon className="h-5 w-5" />}
+</button>
+
+{/* Mode selector for desktop - improved layout */}
+<div className="hidden md:flex fixed top-4 right-4 z-50 gap-2 bg-background/80 backdrop-blur-sm p-1 rounded-lg border border-border">
+  <button
+    onClick={() => setMode('spreadsheet')}
+    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+      mode === 'spreadsheet'
+        ? 'bg-primary text-primary-foreground shadow-sm'
+        : 'bg-accent/60 hover:bg-accent text-accent-foreground hover:shadow-sm'
+    }`}
+  >
+    <PanelLeftIcon className="h-4 w-4 mr-2" />
+    Spreadsheet
+  </button>
+  <button
+    onClick={() => setMode('blocksuite')}
+    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center ${
+      mode === 'blocksuite'
+        ? 'bg-primary text-primary-foreground shadow-sm'
+        : 'bg-accent/60 hover:bg-accent text-accent-foreground hover:shadow-sm'
+    }`}
+  >
+    BlockSuite
+    <PanelRightIcon className="h-4 w-4 ml-2" />
+  </button>
+</div>

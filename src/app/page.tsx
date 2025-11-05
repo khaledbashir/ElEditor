@@ -12,7 +12,8 @@ import { usePersistentContextKey } from "@/hooks/usePersistentContextKey";
 import { TamboProvider } from "@tambo-ai/react";
 import { TamboMcpProvider } from "@tambo-ai/react/mcp";
 import { useState, useEffect, Suspense } from "react";
-import { PanelLeftIcon, PanelRightIcon } from "lucide-react";
+import { PanelLeftIcon, PanelRightIcon, X } from "lucide-react";
+import { ComponentStashPanel } from "@/components/ui/component-stash-panel";
 
 // Dynamic import to avoid SSR issues with BlockSuite
 const LazyBlockSuiteEditor = dynamic(() => import("@/components/ui/blocksuite-editor-enhanced").then(mod => ({ default: mod.BlockSuiteEditorEnhanced })), {
@@ -25,10 +26,25 @@ export default function Home() {
   const [mode, setMode] = useState<'spreadsheet' | 'blocksuite'>('spreadsheet');
   const contextKey = usePersistentContextKey();
   const [isClient, setIsClient] = useState(false);
+  const [showStashNotification, setShowStashNotification] = useState(true);
 
   useEffect(() => {
-    setIsClient(true);
+    const timer = setTimeout(() => setIsClient(true), 0);
+    return () => clearTimeout(timer);
   }, []);
+
+  // Check if notification was dismissed
+  useEffect(() => {
+    const dismissed = localStorage.getItem('component-stash-notification-dismissed');
+    if (dismissed === 'true') {
+      setShowStashNotification(false);
+    }
+  }, []);
+
+  const handleDismissNotification = () => {
+    setShowStashNotification(false);
+    localStorage.setItem('component-stash-notification-dismissed', 'true');
+  };
 
   // Defer rendering chat until client to ensure TamboProvider context
   if (!isClient) {
@@ -88,26 +104,102 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="flex h-full overflow-hidden">
-              {/* Chat panel - always visible */}
-              <div className="flex-1 overflow-hidden">
+            <div 
+              className="flex h-full overflow-hidden"
+              style={{
+                '--panel-left-width': 'var(--panel-left-width, 500px)',
+                '--panel-right-width': 'var(--panel-right-width, 500px)'
+              } as React.CSSProperties}
+            >
+              {/* Left Panel - Chat (resizable) */}
+              <div 
+                className="h-full overflow-hidden border-r relative"
+                style={{
+                  width: 'var(--panel-left-width)',
+                  minWidth: '300px',
+                  maxWidth: 'calc(100vw - 300px)'
+                }}
+              >
                 {contextKey ? <MessageThreadFull contextKey={contextKey} /> : null}
               </div>
 
-              {/* Editor panel */}
-              <div className="w-full md:w-[60%] overflow-auto">
-                {mode === 'spreadsheet' ? (
-                  <>
-                    {/* Tab metadata interactable for AI */}
-                    <InteractableTabs interactableId="TabsState" />
-                    {/* Visual spreadsheet tabs UI */}
-                    <SpreadsheetTabs className="h-full" />
-                  </>
-                ) : (
-                  <Suspense fallback={<div className="h-full flex items-center justify-center">Loading BlockSuite Editor...</div>}>
-                    <LazyBlockSuiteEditor />
-                  </Suspense>
-                )}
+              {/* Resizer Handle */}
+              <div
+                className="w-1 bg-border hover:bg-primary/50 cursor-col-resize relative group transition-colors"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  const startX = e.clientX;
+                  const startLeftWidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--panel-left-width')) || 500;
+
+                  // Add visual feedback during drag
+                  document.body.style.cursor = 'col-resize';
+                  document.body.style.userSelect = 'none';
+
+                  const handleMouseMove = (e: MouseEvent) => {
+                    const deltaX = e.clientX - startX;
+                    const newWidth = Math.max(300, Math.min(window.innerWidth - 300, startLeftWidth + deltaX));
+
+                    document.documentElement.style.setProperty('--panel-left-width', `${newWidth}px`);
+                  };
+
+                  const handleMouseUp = () => {
+                    // Remove visual feedback
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.removeEventListener('mouseup', handleMouseUp);
+                  };
+
+                  document.addEventListener('mousemove', handleMouseMove);
+                  document.addEventListener('mouseup', handleMouseUp);
+                }}
+              >
+                {/* Expanded hit area for easier grabbing */}
+                <div className="absolute inset-y-0 -left-2 -right-2" />
+                {/* Visual indicator on hover */}
+                <div className="absolute inset-y-0 left-0 w-1 bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+
+              {/* Right Panel - Editor (resizable) */}
+              <div 
+                className="flex-1 overflow-auto relative"
+                style={{
+                  width: 'var(--panel-right-width)',
+                  minWidth: '300px'
+                }}
+              >
+                <div className="p-4">
+                  {mode === 'spreadsheet' ? (
+                    <>
+                      {/* Tab metadata interactable for AI */}
+                      <InteractableTabs interactableId="TabsState" />
+                      {/* Visual spreadsheet tabs UI */}
+                      <SpreadsheetTabs className="h-full" />
+                    </>
+                  ) : (
+                    <Suspense fallback={<div className="h-full flex items-center justify-center">Loading BlockSuite Editor...</div>}>
+                      <LazyBlockSuiteEditor />
+                    </Suspense>
+                  )}
+                  
+                  {/* Component Stash Notification */}
+                  {showStashNotification && (
+                    <div className="relative p-3 bg-blue-50 border border-blue-200 rounded-lg mt-4 text-sm">
+                      <button
+                        onClick={handleDismissNotification}
+                        className="absolute top-2 right-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+                        aria-label="Dismiss notification"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                      <div className="pr-8">
+                        <h4 className="font-medium text-blue-900 mb-1">Component Stash Available</h4>
+                        <p className="text-blue-700">Save and reuse AI-generated components for faster workflows.</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </TamboMcpProvider>

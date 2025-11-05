@@ -4,11 +4,10 @@ import { useEffect } from "react";
 
 export function DevTools() {
   useEffect(() => {
-    // Only load React DevTools in development
+    // React DevTools integration disabled for now
+    // Can be re-enabled later if needed
     if (process.env.NODE_ENV === "development") {
-      import("react-devtools").then((devtools) => {
-        devtools.install();
-      });
+      console.debug("React DevTools disabled to prevent import errors");
     }
   }, []);
 

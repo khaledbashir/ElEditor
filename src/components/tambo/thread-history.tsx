@@ -229,8 +229,8 @@ const ThreadHistoryHeader = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex items-center mb-4 relative",
-        isCollapsed ? "p-1" : "p-1",
+        "flex items-center justify-between mb-2 relative",
+        isCollapsed ? "p-1 justify-center" : "p-2 gap-2",
         className,
       )}
       {...props}
@@ -248,8 +248,10 @@ const ThreadHistoryHeader = React.forwardRef<
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className={cn(
-          `bg-container p-1 hover:bg-backdrop transition-colors rounded-md cursor-pointer absolute flex items-center justify-center`,
-          position === "left" ? "right-1" : "left-0",
+          "bg-container p-1 hover:bg-backdrop transition-colors rounded-md cursor-pointer flex items-center justify-center flex-shrink-0",
+          isCollapsed && "absolute",
+          position === "left" && isCollapsed ? "right-1" : "",
+          position === "right" && isCollapsed ? "left-0" : "",
         )}
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
@@ -310,7 +312,7 @@ const ThreadHistoryNewButton = React.forwardRef<
       ref={ref}
       onClick={handleNewThread}
       className={cn(
-        "flex items-center rounded-md mb-4 hover:bg-backdrop transition-colors cursor-pointer relative",
+        "flex items-center rounded-md mb-2 hover:bg-backdrop transition-colors cursor-pointer relative",
         isCollapsed ? "p-1 justify-center" : "p-2 gap-2",
       )}
       title="New thread"
