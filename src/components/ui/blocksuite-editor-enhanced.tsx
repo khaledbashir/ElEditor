@@ -447,7 +447,7 @@ export function BlockSuiteEditorEnhanced({ className = "" }: BlockSuiteEditorPro
             globalCollection = editorEl.workspace;
             globalDoc = editorEl.page;
 
-            console.log("✅ BlockSuite editor initialized");
+            // console.log("✅ BlockSuite editor initialized");
             console.log("   Workspace:", editorEl.workspace);
             console.log("   Page:", editorEl.page);
             console.log("   Page ID:", editorEl.page.id);
@@ -484,7 +484,7 @@ export function BlockSuiteEditorEnhanced({ className = "" }: BlockSuiteEditorPro
                 return controller.clearEditor();
               };
 
-              console.log("📝 Manual testing functions available:");
+              // console.log("📝 Manual testing functions available:");
               console.log("   addText(content) - Add a paragraph");
               console.log("   addHeading(text, level) - Add a heading (level 1-3)");
               console.log("   addList(items, ordered) - Add a list");

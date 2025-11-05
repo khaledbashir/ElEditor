@@ -85,8 +85,8 @@ export function extractLabels(cells: Cell[]): string[] {
 
   // Debug logging to help diagnose label issues
   if (process.env.NODE_ENV === "development") {
-    console.log("[extractLabels] Input cells:", cells);
-    console.log("[extractLabels] Output labels:", labels);
+    // console.log("[extractLabels] Input cells:", cells);
+    // console.log("[extractLabels] Output labels:", labels);
   }
 
   return labels;
